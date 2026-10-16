@@ -2,10 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style>html,body{touch-action:manipulation}</style>
 <script src="nozoom.js"></script>
-<script src="home.js"></script><meta charset="utf-8"><title>ABCs</title>
+<script>window.HOME_POS='left'</script><script src="home.js"></script><meta charset="utf-8"><title>ABCs</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Arial Rounded MT Bold',sans-serif;background:linear-gradient(#e0f7ff,#ffe0f0)}
-#modes{position:fixed;top:10px;left:10px;display:flex;gap:10px;z-index:5}
+#modes{position:fixed;top:10px;right:10px;display:flex;gap:10px;z-index:5}
 #modes button{width:80px;height:70px;border-radius:20px;border:4px solid #fff;background:#fff;font-size:38px;box-shadow:0 4px 10px #0003}
 #modes button.on{border-color:#ff4fa3;background:#ffe3f1}
 .view{position:fixed;left:0;right:0;top:90px;bottom:0;display:none;flex-direction:column;align-items:center;justify-content:center}
@@ -23,11 +23,20 @@ html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:non
 #ask{font-size:70px;margin-bottom:20px}
 .wig{animation:wg .5s}
 @keyframes wg{20%,60%{transform:rotate(-10deg)}40%,80%{transform:rotate(10deg)}}
+#learn{justify-content:flex-start;padding-top:4px}
+#pz{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+#pemo{font-size:min(26vw,18vh);line-height:1.1}
+#pword{display:flex;align-items:center;gap:4px;background:#fff;border-radius:30px;box-shadow:0 10px 24px #0003;padding:8px 22px;font-size:min(12vw,8vh);font-weight:900;color:#555;margin-top:8px}
+#slot{width:min(18vw,11vh);height:min(20vw,12vh);border:5px dashed #ff4fa3;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:min(14vw,9vh);background:#fff6fb}
+#slot.hot{background:#ffd6ec}#slot.done{border-style:solid;border-color:#2fbf3a;background:#eaffea}
+#tray{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:8px 6px 14px;max-width:1000px;overflow-y:auto;max-height:42vh}
+.lt{width:min(13vw,62px);height:min(13vw,62px);border-radius:14px;background:#fff;box-shadow:0 4px 8px #0003;display:flex;align-items:center;justify-content:center;font-size:min(9vw,40px);font-weight:900;touch-action:none;cursor:grab;border:3px solid #fff}
+.lt.sel{border-color:#ff4fa3;transform:scale(1.1)}
+.lt.drag{position:fixed;z-index:50;pointer-events:none;transform:scale(1.25)}
 .cf{position:fixed;width:14px;height:14px;z-index:6;pointer-events:none;border-radius:3px}
 </style></head><body>
 <div id="modes"><button id="mLearn" class="on">🔊</button><button id="mFind">🔍</button></div>
-<div id="learn" class="view on"><div id="card"><span id="big"></span><span id="small"></span></div><div id="emo"></div>
-<button class="nav" id="prev">⬅️</button><button class="nav" id="next">➡️</button></div>
+<div id="learn" class="view on"><div id="pz"><div id="pemo"></div><div id="pword"><div id="slot"></div><span id="prest"></span></div></div><div id="tray"></div></div>
 <div id="find" class="view"><div id="ask">🔍<span id="askE"></span></div><div id="choices"></div></div>
 <script>
 const W=[['A','apple','🍎'],['B','ball','⚽'],['C','cat','🐱'],['D','dog','🐶'],['E','elephant','🐘'],['F','fish','🐟'],['G','grapes','🍇'],['H','house','🏠'],['I','ice cream','🍦'],['J','jellyfish','🪼'],['K','kite','🪁'],['L','lion','🦁'],['M','moon','🌙'],['N','nest','🪺'],['O','octopus','🐙'],['P','pig','🐷'],['Q','queen','👸'],['R','rainbow','🌈'],['S','sun','☀️'],['T','turtle','🐢'],['U','umbrella','☂️'],['V','violin','🎻'],['W','whale','🐳'],['X','xylophone','🎶'],['Y','yo-yo','🪀'],['Z','zebra','🦓']];
@@ -37,14 +46,26 @@ const $=id=>document.getElementById(id);
 function say(t){const s=window.speechSynthesis;if(!s)return;const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;u.pitch=1.2;s.speak(u)};
  if(s.speaking||s.pending){s.cancel();setTimeout(go,60)}else go();}
 function bounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce')}
-function show(speak){const [L,w,e]=W[i];$('big').textContent=L;$('small').textContent=L.toLowerCase();
- $('card').style.color=COL[i%COL.length];$('emo').textContent=e;bounce($('card'));bounce($('emo'));if(speak)say(L+'... '+w+'!');}
-function go(d){i=(i+d+26)%26;show(true)}
+let sel=null,solved=false;
+function show(speak){const [L,w,e]=W[i];solved=false;sel=null;$('pemo').textContent=e;$('slot').textContent='';$('slot').className='';
+ $('prest').textContent=w.slice(1);bounce($('pemo'));buildTray();if(speak)say(w+'!');}
+function buildTray(){const t=$('tray');t.innerHTML='';W.forEach((x,n)=>{const d=document.createElement('div');d.className='lt';d.textContent=x[0];d.dataset.n=n;d.style.color=COL[n%COL.length];
+ d.addEventListener('pointerdown',ev=>startDrag(ev,d));t.appendChild(d)})}
+function overSlot(x,y){const r=$('slot').getBoundingClientRect();return x>r.left-20&&x<r.right+20&&y>r.top-20&&y<r.bottom+20}
+function startDrag(ev,d){ev.preventDefault();if(solved)return;const sx=ev.clientX,sy=ev.clientY,r=d.getBoundingClientRect();let moved=false,ph=null;
+ const mv=e=>{if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)>10){moved=true;ph=d.cloneNode(true);ph.style.visibility='hidden';d.after(ph);d.classList.add('drag');d.style.width=r.width+'px';d.style.height=r.height+'px'}
+  if(moved){d.style.left=(e.clientX-r.width/2)+'px';d.style.top=(e.clientY-r.height/2)+'px';$('slot').classList.toggle('hot',overSlot(e.clientX,e.clientY))}};
+ const up=e=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);$('slot').classList.remove('hot');
+  if(moved){d.classList.remove('drag');d.style.left=d.style.top=d.style.width=d.style.height='';ph.remove();if(overSlot(e.clientX,e.clientY))place(+d.dataset.n,d)}
+  else{document.querySelectorAll('.lt.sel').forEach(x=>x.classList.remove('sel'));sel=d;d.classList.add('sel');say(W[d.dataset.n][0])}};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up)}
+tap($('slot'),()=>{if(sel&&!solved)place(+sel.dataset.n,sel)});
+tap($('pemo'),()=>say(W[i][1]+'!'));
+function place(n,d){if(solved)return;const [L,w]=W[i];
+ if(n===i){solved=true;window.lastSuccess=L;const s=$('slot');s.textContent=L.toLowerCase();s.style.color=COL[i%COL.length];s.className='done';d.style.visibility='hidden';
+  bounce($('pword'));confetti();cheer();say(L+'... '+w+'!');setTimeout(()=>{i=(i+1)%26;show(true)},2800)}
+ else{d.classList.remove('sel','wig');void d.offsetWidth;d.classList.add('wig');sel=null;say("That's "+W[n][0]+'. Try again!')}}
 function tap(el,f){el.addEventListener('pointerdown',e=>{e.preventDefault();f(e)})}
-tap($('card'),()=>show(true));tap($('emo'),()=>show(true));
-tap($('prev'),()=>go(-1));tap($('next'),()=>go(1));
-let sx=null;$('learn').addEventListener('pointerdown',e=>sx=e.clientX);
-$('learn').addEventListener('pointerup',e=>{if(sx!==null&&Math.abs(e.clientX-sx)>60)go(e.clientX<sx?1:-1);sx=null});
 function setMode(f){$('mLearn').classList.toggle('on',!f);$('mFind').classList.toggle('on',f);$('learn').classList.toggle('on',!f);$('find').classList.toggle('on',f);f?round():show(true)}
 tap($('mLearn'),()=>setMode(false));tap($('mFind'),()=>setMode(true));
 function round(){busy=false;let t;do t=Math.floor(Math.random()*26);while(t===target);target=t;
