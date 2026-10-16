@@ -28,6 +28,7 @@ html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:non
 #pemo{font-size:min(26vw,18vh);line-height:1.1}
 #pword{display:flex;align-items:center;gap:4px;background:#fff;border-radius:30px;box-shadow:0 10px 24px #0003;padding:8px 22px;font-size:min(12vw,8vh);font-weight:900;color:#555;margin-top:8px}
 #slot{width:min(18vw,11vh);height:min(20vw,12vh);border:5px dashed #ff4fa3;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:min(14vw,9vh);background:#fff6fb}
+#slot{position:relative}#slot:empty::before{content:attr(data-ghost);color:transparent;-webkit-text-stroke:2px rgba(255,79,163,.35);font-weight:900}
 #slot.hot{background:#ffd6ec}#slot.done{border-style:solid;border-color:#2fbf3a;background:#eaffea}
 #tray{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:8px 6px 14px;max-width:1000px;overflow-y:auto;max-height:42vh}
 .lt{width:min(13vw,62px);height:min(13vw,62px);border-radius:14px;background:#fff;box-shadow:0 4px 8px #0003;display:flex;align-items:center;justify-content:center;font-size:min(9vw,40px);font-weight:900;touch-action:none;cursor:grab;border:3px solid #fff}
@@ -47,7 +48,7 @@ function say(t){const s=window.speechSynthesis;if(!s)return;const u=new SpeechSy
  try{if(s.speaking||s.pending)s.cancel();s.resume();s.speak(u);}catch(e){}}
 function bounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce')}
 let sel=null,solved=false;
-function show(speak){const [L,w,e]=W[i];solved=false;sel=null;$('pemo').textContent=e;$('slot').textContent='';$('slot').className='';
+function show(speak){const [L,w,e]=W[i];solved=false;sel=null;$('pemo').textContent=e;$('slot').textContent='';$('slot').className='';$('slot').dataset.ghost=L.toLowerCase();
  $('prest').textContent=w.slice(1);bounce($('pemo'));buildTray();if(speak)say(w+'!');}
 function buildTray(){const t=$('tray');t.innerHTML='';W.forEach((x,n)=>{const d=document.createElement('div');d.className='lt';d.textContent=x[0];d.dataset.n=n;d.style.color=COL[n%COL.length];
  d.addEventListener('pointerdown',ev=>startDrag(ev,d));t.appendChild(d)})}
