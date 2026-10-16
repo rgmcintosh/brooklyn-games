@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>html,body{touch-action:manipulation}</style>
-<script src="nozoom.js"></script><meta charset="utf-8">
+<script src="nozoom.js"></script><script src="levels.js"></script><meta charset="utf-8">
 
 <title>Brooklyn's Dino Adventure</title>
 <style>html,body{margin:0;height:100%;overflow:hidden;touch-action:none;background:#aed581}canvas{display:block}#mg{position:fixed;inset:0;display:none;background:radial-gradient(circle,#fff9c4,#dcedc8 60%,#aed581);touch-action:none;font-family:sans-serif}
@@ -26,12 +26,18 @@ c.addEventListener('pointermove',go);c.addEventListener('touchmove',go,{passive:
 c.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault()},{passive:false});
 for(let i=0;i<5;i++)stars.push({x:Math.random(),y:Math.random()*.7+.15,got:0});
 let t=0,score=0;
+const SC=[{n:'meadow',g:['#ffcc80','#ffe0b2','#c5e1a5','#7cb342'],hill:'#8d6e63',line:'#558b2f',gr:'#a1887f',sky:['☀️','☁️','🌋'],d:['🌴','🌋','🌿','🐚','🪨','🌴'],leaf:'🍃'},
+{n:'desert',g:['#ffb74d','#ffe082','#ffe0a0','#e0a96d'],hill:'#c98a4b',line:'#d4a056',gr:'#c8955a',sky:['☀️','🦅','🏜️'],d:['🌵','🪨','🌵','🦂','🌵','🐍'],leaf:'✨'},
+{n:'snowy mountains',g:['#90caf9','#e3f2fd','#ffffff','#e1f5fe'],hill:'#78909c',line:'#ffffff',gr:'#eceff1',sky:['🌤️','☁️','🏔️'],d:['🌲','⛄','🌲','❄️','🏔️','🌲'],leaf:'❄️'},
+{n:'volcano',g:['#ff7043','#ffab91','#ffcc80','#8d6e63'],hill:'#5d4037',line:'#bf360c',gr:'#6d4c41',sky:['🌅','☁️','🌋'],d:['🌋','🔥','🪨','🌴','🔥','🌋'],leaf:'🔥'},
+{n:'starry night',g:['#0d1b4a','#283593','#33691e','#1b5e20'],hill:'#37474f',line:'#2e7d32',gr:'#4e342e',sky:['🌙','⭐','✨'],d:['🌲','🦉','🍄','🌟','🪨','🌲'],leaf:'✨'}];
+let sc=SC[0],eggCount=0;LV.onScene=l=>{sc=SC[(l-1)%SC.length]};
 function E(e,X,Y,sz,fl){x.save();x.translate(X,Y);if(fl)x.scale(-1,1);x.font=sz+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(e,0,0);x.restore()}
 function loop(){t+=.016;
- let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#ffcc80');g.addColorStop(.3,'#ffe0b2');g.addColorStop(.42,'#c5e1a5');g.addColorStop(1,'#7cb342');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle='#8d6e63';x.beginPath();x.moveTo(0,H*.42);for(let i=0;i<=8;i++)x.lineTo(i*W/8,H*(.42-(i%2?.12:.04)));x.lineTo(W,H*.42);x.fill();x.fillStyle='#558b2f';x.fillRect(0,H*.42,W,6);x.font=(Math.min(W,H)/7)+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('☀️',W*.85,H*.1);x.fillText('☁️',W*.25+Math.sin(t*.2)*30,H*.12);x.fillText('🌋',W*.55,H*.3);
- x.fillStyle='#a1887f';x.fillRect(0,H-50,W,50);
+ let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,sc.g[0]);g.addColorStop(.3,sc.g[1]);g.addColorStop(.42,sc.g[2]);g.addColorStop(1,sc.g[3]);x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle=sc.hill;x.beginPath();x.moveTo(0,H*.42);for(let i=0;i<=8;i++)x.lineTo(i*W/8,H*(.42-(i%2?.12:.04)));x.lineTo(W,H*.42);x.fill();x.fillStyle=sc.line;x.fillRect(0,H*.42,W,6);x.font=(Math.min(W,H)/7)+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(sc.sky[0],W*.85,H*.1);x.fillText(sc.sky[1],W*.25+Math.sin(t*.2)*30,H*.12);x.fillText(sc.sky[2],W*.55,H*.3);
+ x.fillStyle=sc.gr;x.fillRect(0,H-50,W,50);
  const u=Math.min(W,H)/8;
- ['🌴','🌋','🌿','🐚','🪨','🌴'].forEach((e,i)=>E(e,(i+.5)*W/6,H-55+Math.sin(t*2+i)*4,u*.8));
+ sc.d.forEach((e,i)=>E(e,(i+.5)*W/6,H-55+Math.sin(t*2+i)*4,u*.8));
  me.x+=(me.tx-me.x)*.06;me.y+=(me.ty-me.y)*.06;const fl=me.tx<me.x;
  pals.forEach((p,i)=>{const a=t*.8+p.a,gx=me.x+Math.cos(a)*p.d*u/60,gy=me.y+Math.sin(a)*p.d*u/90;
   p.f=gx<p.x;p.x+=(gx-p.x)*.04;p.y+=(gy-p.y)*.04;E(p.e,p.x,p.y+Math.sin(t*3+i)*5,u*p.s,!p.f)});
@@ -40,7 +46,7 @@ function loop(){t+=.016;
   if(Math.hypot(sx-me.x,sy-me.y)<u*.8){s.got=1;score++;for(let i=0;i<20;i++)bub.push({x:sx,y:sy,r:5+Math.random()*12,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,l:1});
    setTimeout(()=>{s.x=Math.random()*.9+.05;s.y=Math.random()*.65+.15;s.got=0},1500)}}});
  bub=bub.filter(b=>(b.x+=b.vx,b.y+=b.vy,b.l-=(b.leaf?.003:.015),b.l>0));
- bub.forEach(b=>{x.globalAlpha=Math.max(0,b.l);if(b.leaf){x.font='22px serif';x.fillText('🍃',b.x,b.y)}else{x.fillStyle='#ffd54f';x.beginPath();x.arc(b.x,b.y,b.r*.6,0,7);x.fill()}x.globalAlpha=1});
+ bub.forEach(b=>{x.globalAlpha=Math.max(0,b.l);if(b.leaf){x.font='22px serif';x.fillText(sc.leaf,b.x,b.y)}else{x.fillStyle='#ffd54f';x.beginPath();x.arc(b.x,b.y,b.r*.6,0,7);x.fill()}x.globalAlpha=1});
  if(Math.random()<.02)bub.push({x:Math.random()*W,y:-10,r:6,vx:.6,vy:1.2,l:1,leaf:1});
  drawEggs(u);x.font=(u*.6)+'px serif';x.textAlign='left';x.fillStyle='#fff';x.fillText('🌟 '+score,15,u*.6);
  requestAnimationFrame(loop)}loop();
@@ -89,7 +95,8 @@ setInterval(()=>{if(mgOpen)return;const v=Math.min(W,H)/60;let dx=0,dy=0;
 // Spacebar eggs
 var eggs=[];
 function layEgg(){if(mgOpen)return;
- const d=(me.tx-me.x)>2?1:(me.tx-me.x)<-2?-1:(me.dir||1);me.dir=d;const uu=Math.min(W,H)/8;eggs.push({x:me.x-d*uu*.45,y:me.y+uu*.3,vy:-2,vx:-d*(2+Math.random()*2),age:0,st:0,plop:1});if(eggs.length>12)eggs.shift()}
+ const d=(me.tx-me.x)>2?1:(me.tx-me.x)<-2?-1:(me.dir||1);me.dir=d;const uu=Math.min(W,H)/8;eggs.push({x:me.x-d*uu*.45,y:me.y+uu*.3,vy:-2,vx:-d*(2+Math.random()*2),age:0,st:0,plop:1});if(eggs.length>12)eggs.shift();
+ if(++eggCount%5===0)setTimeout(function tu(){if(LV.busy()||mgOpen)return setTimeout(tu,500);LV.up(SC[LV.level%SC.length].n)},1200)}
 addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(e.repeat)return;layEgg()}});
 // Long-press on the dino (tablet) lays eggs; keep holding for more
 (function(){let lt=null,li=null,sx=0,sy=0;const stop=()=>{clearTimeout(lt);clearInterval(li);lt=li=null};

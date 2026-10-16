@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>html,body{touch-action:manipulation}</style>
-<script src="nozoom.js"></script><meta charset="utf-8">
+<script src="nozoom.js"></script><script src="levels.js"></script><meta charset="utf-8">
 
 <title>Swim with Brooklyn</title>
 <style>html,body{margin:0;height:100%;overflow:hidden;touch-action:none;background:#4fc3f7}canvas{display:block}#mg{position:fixed;inset:0;display:none;background:radial-gradient(circle,#ffe0f0,#f8bbd0 60%,#ce93d8);touch-action:none;font-family:sans-serif}
@@ -25,13 +25,20 @@ let lastB=0;function go(e){const t=e.touches?e.touches[0]:e;me.tx=t.clientX;me.t
 c.addEventListener('pointermove',go);c.addEventListener('touchmove',go,{passive:false});
 c.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault()},{passive:false});
 for(let i=0;i<5;i++)stars.push({x:Math.random(),y:Math.random()*.7+.15,got:0});
-let t=0,score=0;
+let t=0,score=0,lvBase=0;
+const SC=[{n:'sunny reef',g:['#81d4fa','#0277bd'],sand:'#f4dfa8',d:['🪸','🌿','🪸','🐚','🌿','⭐'],f:[]},
+{n:'kelp forest',g:['#80cbc4','#00695c'],sand:'#a1887f',d:['🌿','🌿','🌱','🦀','🌿','🌿'],f:['🌿','🐡']},
+{n:'deep blue sea',g:['#1a237e','#000033'],sand:'#37474f',d:['🪨','🐚','🪸','🪨','🦑','🪨'],f:['🪼','🪼','🪼']},
+{n:'sunken ship',g:['#4db6ac','#004d40'],sand:'#d7b56d',d:['💰','⚓','🏴‍☠️','💎','🗝️','🪙'],f:['🚢']},
+{n:'icy arctic',g:['#e1f5fe','#4fc3f7'],sand:'#ffffff',d:['🐧','🧊','🐧','❄️','🦭','🐧'],f:['🧊','🐻‍❄️']}];
+let sc=SC[0];LV.onScene=l=>{sc=SC[(l-1)%SC.length];lvBase=score};
 function E(e,X,Y,sz,fl){x.save();x.translate(X,Y);if(fl)x.scale(-1,1);x.font=sz+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(e,0,0);x.restore()}
 function loop(){t+=.016;
- let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#81d4fa');g.addColorStop(1,'#0277bd');x.fillStyle=g;x.fillRect(0,0,W,H);
- x.fillStyle='#f4dfa8';x.fillRect(0,H-50,W,50);
+ let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,sc.g[0]);g.addColorStop(1,sc.g[1]);x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.fillStyle=sc.sand;x.fillRect(0,H-50,W,50);
  const u=Math.min(W,H)/8;
- ['🪸','🌿','🪸','🐚','🌿','⭐'].forEach((e,i)=>E(e,(i+.5)*W/6,H-55+Math.sin(t*2+i)*4,u*.8));
+ sc.d.forEach((e,i)=>E(e,(i+.5)*W/6,H-55+Math.sin(t*2+i)*4,u*.8));
+ sc.f.forEach((e,i)=>{x.globalAlpha=.85;E(e,((i*.37+.15+t*.01*(i%2?1:-1))%1+1)%1*W,H*(.2+.22*i)+Math.sin(t+i)*20,u*(sc.n=='sunken ship'?1.6:.9));x.globalAlpha=1});
  me.x+=(me.tx-me.x)*.06;me.y+=(me.ty-me.y)*.06;const fl=me.tx<me.x;
  pals.forEach((p,i)=>{const a=t*.8+p.a,gx=me.x+Math.cos(a)*p.d*u/60,gy=me.y+Math.sin(a)*p.d*u/90;
   p.f=gx<p.x;p.x+=(gx-p.x)*.04;p.y+=(gy-p.y)*.04;E(p.e,p.x,p.y+Math.sin(t*3+i)*5,u*p.s,!p.f)});
@@ -43,6 +50,7 @@ function loop(){t+=.016;
  bub.forEach(b=>{x.strokeStyle='rgba(255,255,255,'+b.l+')';x.lineWidth=2;x.beginPath();x.arc(b.x,b.y,b.r,0,7);x.stroke()});
  if(Math.random()<.05)bub.push({x:Math.random()*W,y:H,r:3+Math.random()*6,vx:0,vy:-1,l:1});
  x.font=(u*.6)+'px serif';x.textAlign='left';x.fillStyle='#fff';x.fillText('🌟 '+score,15,u*.6);
+ if(!mgOpen&&!LV.busy()&&score-lvBase>=5){lvBase=score;LV.up(SC[LV.level%SC.length].n)}
  requestAnimationFrame(loop)}loop();
 
 // Shell mini-game
