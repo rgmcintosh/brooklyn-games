@@ -88,8 +88,16 @@ setInterval(()=>{if(mgOpen)return;const v=Math.min(W,H)/60;let dx=0,dy=0;
 
 // Spacebar eggs
 var eggs=[];
-addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(mgOpen||e.repeat)return;
- const d=(me.tx-me.x)>2?1:(me.tx-me.x)<-2?-1:(me.dir||1);me.dir=d;const uu=Math.min(W,H)/8;eggs.push({x:me.x-d*uu*.45,y:me.y+uu*.3,vy:-2,vx:-d*(2+Math.random()*2),age:0,st:0,plop:1});if(eggs.length>12)eggs.shift()}});
+function layEgg(){if(mgOpen)return;
+ const d=(me.tx-me.x)>2?1:(me.tx-me.x)<-2?-1:(me.dir||1);me.dir=d;const uu=Math.min(W,H)/8;eggs.push({x:me.x-d*uu*.45,y:me.y+uu*.3,vy:-2,vx:-d*(2+Math.random()*2),age:0,st:0,plop:1});if(eggs.length>12)eggs.shift()}
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(e.repeat)return;layEgg()}});
+// Long-press on the dino (tablet) lays eggs; keep holding for more
+(function(){let lt=null,li=null,sx=0,sy=0;const stop=()=>{clearTimeout(lt);clearInterval(li);lt=li=null};
+ c.addEventListener('pointerdown',e=>{const uu=Math.min(W,H)/8;if(Math.hypot(e.clientX-me.x,e.clientY-me.y)>uu*1.3)return;sx=e.clientX;sy=e.clientY;stop();
+  lt=setTimeout(()=>{layEgg();if(navigator.vibrate)navigator.vibrate(30);li=setInterval(layEgg,700)},450)});
+ c.addEventListener('pointermove',e=>{if(lt&&!li&&Math.hypot(e.clientX-sx,e.clientY-sy)>25)stop()});
+ ['pointerup','pointercancel','pointerleave'].forEach(t=>c.addEventListener(t,stop));
+ c.addEventListener('contextmenu',e=>e.preventDefault());})();
 function drawEggs(u){if(!eggs)eggs=[];const gy=H-70;eggs.forEach(g=>{g.age+=.016;
  if(g.y<gy){g.vy+=.5;g.y+=g.vy;g.x+=g.vx;if(g.y>=gy){g.y=gy;g.vy=0;for(let i=0;i<8;i++)bub.push({x:g.x,y:gy,r:4,vx:(Math.random()-.5)*4,vy:-Math.random()*3,l:1})}}
  else{g.x+=g.vx;g.vx*=.96}
