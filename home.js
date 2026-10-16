@@ -1,4 +1,4 @@
 (function(){function add(){if(document.getElementById('homeBtn'))return;var a=document.createElement('a');a.id='homeBtn';a.href='index.html';a.textContent='🏠';a.setAttribute('aria-label','Home');
-a.style.cssText='position:fixed;left:10px;top:10px;z-index:99998;width:60px;height:60px;border-radius:50%;background:#fff;border:3px solid #ff4f9a;box-shadow:0 3px 10px #0004;display:flex;align-items:center;justify-content:center;font-size:32px;text-decoration:none;touch-action:manipulation';
+a.style.cssText='position:fixed;right:10px;top:10px;z-index:99998;width:60px;height:60px;border-radius:50%;background:#fff;border:3px solid #ff4f9a;box-shadow:0 3px 10px #0004;display:flex;align-items:center;justify-content:center;font-size:32px;text-decoration:none;touch-action:manipulation';
 ['pointerdown','touchstart','mousedown'].forEach(function(e){a.addEventListener(e,function(ev){ev.stopPropagation()},{passive:true})});
-if(window.HOME_POS==='bottom'){a.style.top='auto';a.style.bottom='10px'}document.body.appendChild(a)}if(document.body)add();else document.addEventListener('DOMContentLoaded',add)})();
+if(window.HOME_POS==='left'){a.style.right='auto';a.style.left='10px'}document.body.appendChild(a)}if(document.body)add();else document.addEventListener('DOMContentLoaded',add)})();
