@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>html,body{touch-action:manipulation}</style>
+<script src="nozoom.js"></script>
+<script src="home.js"></script><meta charset="utf-8"><title>ABCs</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Arial Rounded MT Bold',sans-serif;background:linear-gradient(#e0f7ff,#ffe0f0)}
+#modes{position:fixed;top:10px;left:10px;display:flex;gap:10px;z-index:5}
+#modes button{width:80px;height:70px;border-radius:20px;border:4px solid #fff;background:#fff;font-size:38px;box-shadow:0 4px 10px #0003}
+#modes button.on{border-color:#ff4fa3;background:#ffe3f1}
+.view{position:fixed;left:0;right:0;top:90px;bottom:0;display:none;flex-direction:column;align-items:center;justify-content:center}
+.view.on{display:flex}
+#card{background:#fff;border-radius:40px;box-shadow:0 12px 30px #0003;padding:10px 40px;display:flex;align-items:baseline;gap:10px}
+#big{font-size:min(50vw,38vh);font-weight:900;line-height:1}
+#small{font-size:min(20vw,15vh);font-weight:900}
+#emo{font-size:min(28vw,20vh);margin-top:10px}
+.bounce{animation:bo .5s}
+@keyframes bo{30%{transform:scale(1.2) rotate(-5deg)}60%{transform:scale(.92)}}
+.nav{position:fixed;bottom:16px;width:100px;height:100px;border-radius:50%;border:none;background:#fff;font-size:56px;box-shadow:0 6px 14px #0003}
+#prev{left:16px}#next{right:16px}
+#choices{display:flex;gap:4vw;flex-wrap:wrap;justify-content:center}
+.ch{width:min(28vw,30vh);height:min(32vw,34vh);background:#fff;border-radius:32px;box-shadow:0 10px 24px #0003;display:flex;align-items:center;justify-content:center;font-size:min(22vw,24vh);font-weight:900}
+#ask{font-size:70px;margin-bottom:20px}
+.wig{animation:wg .5s}
+@keyframes wg{20%,60%{transform:rotate(-10deg)}40%,80%{transform:rotate(10deg)}}
+.cf{position:fixed;width:14px;height:14px;z-index:6;pointer-events:none;border-radius:3px}
+</style></head><body>
+<div id="modes"><button id="mLearn" class="on">🔊</button><button id="mFind">🔍</button></div>
+<div id="learn" class="view on"><div id="card"><span id="big"></span><span id="small"></span></div><div id="emo"></div>
+<button class="nav" id="prev">⬅️</button><button class="nav" id="next">➡️</button></div>
+<div id="find" class="view"><div id="ask">🔍<span id="askE"></span></div><div id="choices"></div></div>
+<script>
+const W=[['A','apple','🍎'],['B','ball','⚽'],['C','cat','🐱'],['D','dog','🐶'],['E','elephant','🐘'],['F','fish','🐟'],['G','grapes','🍇'],['H','house','🏠'],['I','ice cream','🍦'],['J','jellyfish','🪼'],['K','kite','🪁'],['L','lion','🦁'],['M','moon','🌙'],['N','nest','🪺'],['O','octopus','🐙'],['P','pig','🐷'],['Q','queen','👸'],['R','rainbow','🌈'],['S','sun','☀️'],['T','turtle','🐢'],['U','umbrella','☂️'],['V','violin','🎻'],['W','whale','🐳'],['X','xylophone','🎶'],['Y','yo-yo','🪀'],['Z','zebra','🦓']];
+const COL=['#ff3b3b','#ff9a1f','#e6b800','#2fbf3a','#2e8bff','#a64dff','#ff4fc1','#00b8a9'];
+let i=0,target=0,busy=false;
+const $=id=>document.getElementById(id);
+function say(t){const s=window.speechSynthesis;if(!s)return;const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;u.pitch=1.2;s.speak(u)};
+ if(s.speaking||s.pending){s.cancel();setTimeout(go,60)}else go();}
+function bounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce')}
+function show(speak){const [L,w,e]=W[i];$('big').textContent=L;$('small').textContent=L.toLowerCase();
+ $('card').style.color=COL[i%COL.length];$('emo').textContent=e;bounce($('card'));bounce($('emo'));if(speak)say(L+'... '+w+'!');}
+function go(d){i=(i+d+26)%26;show(true)}
+function tap(el,f){el.addEventListener('pointerdown',e=>{e.preventDefault();f(e)})}
+tap($('card'),()=>show(true));tap($('emo'),()=>show(true));
+tap($('prev'),()=>go(-1));tap($('next'),()=>go(1));
+let sx=null;$('learn').addEventListener('pointerdown',e=>sx=e.clientX);
+$('learn').addEventListener('pointerup',e=>{if(sx!==null&&Math.abs(e.clientX-sx)>60)go(e.clientX<sx?1:-1);sx=null});
+function setMode(f){$('mLearn').classList.toggle('on',!f);$('mFind').classList.toggle('on',f);$('learn').classList.toggle('on',!f);$('find').classList.toggle('on',f);f?round():show(true)}
+tap($('mLearn'),()=>setMode(false));tap($('mFind'),()=>setMode(true));
+function round(){busy=false;let t;do t=Math.floor(Math.random()*26);while(t===target);target=t;
+ const set=[t];while(set.length<3){const r=Math.floor(Math.random()*26);if(!set.includes(r))set.push(r)}set.sort(()=>Math.random()-.5);
+ const c=$('choices');c.innerHTML='';set.forEach((n,k)=>{const d=document.createElement('div');d.className='ch';d.textContent=W[n][0];d.style.color=COL[(n+k)%COL.length];
+  tap(d,()=>pick(n,d));c.appendChild(d)});$('askE').textContent='';say('Find '+W[t][0]+'!');}
+function pick(n,d){if(busy)return;const [L,w,e]=W[target];
+ if(n===target){busy=true;bounce(d);$('askE').textContent=e;confetti();cheer();say('Yay! '+L+', '+w+'!');setTimeout(round,2600)}
+ else{d.classList.remove('wig');void d.offsetWidth;d.classList.add('wig');say("That's "+W[n][0]+'. Find '+L+'!')}}
+let actx;function cheer(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();[523,659,784,1047].forEach((f,k)=>{const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+k*.1;o.frequency.value=f;g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.3)})}catch(e){}}
+function confetti(){for(let k=0;k<40;k++){const c=document.createElement('div');c.className='cf';c.style.background=COL[k%8];c.style.left=innerWidth/2+'px';c.style.top=innerHeight/2+'px';document.body.appendChild(c);
+ const a=Math.random()*6.28,v=150+Math.random()*250;c.animate([{transform:'translate(0,0)'},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v+200}px) rotate(720deg)`,opacity:0}],{duration:1400});setTimeout(()=>c.remove(),1400)}}
+show(false);
+</script></body></html>
