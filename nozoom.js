@@ -18,7 +18,7 @@ function addBtn(){var b=document.createElement('button');b.id='zoomReset';b.text
  b.addEventListener('click',function(e){e.stopPropagation();resetZoom()});document.body.appendChild(b);
  var vv=window.visualViewport;function upd(){var z=vv&&vv.scale>1.02;b.style.display=z?'flex':'none';if(z){b.style.transform='scale('+(1/vv.scale)+')';b.style.transformOrigin='bottom right';b.style.left=(vv.offsetLeft+vv.width-76/vv.scale)+'px';b.style.top=(vv.offsetTop+vv.height-76/vv.scale)+'px';b.style.right='auto';b.style.bottom='auto'}}
  if(vv){vv.addEventListener('resize',upd);vv.addEventListener('scroll',upd)}upd()}
-if(document.body)addBtn();else document.addEventListener('DOMContentLoaded',addBtn);
+// reset-zoom button disabled (auto snap-back below handles zoom)
 })();
 
 // Auto snap-back: if Safari ever zooms (or restores a zoomed state on reload), reset to 100%
