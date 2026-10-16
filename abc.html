@@ -44,8 +44,10 @@ const W=[['A','apple','🍎'],['B','ball','⚽'],['C','cat','🐱'],['D','dog','
 const COL=['#ff3b3b','#ff9a1f','#e6b800','#2fbf3a','#2e8bff','#a64dff','#ff4fc1','#00b8a9'];
 let i=0,target=0,busy=false;
 const $=id=>document.getElementById(id);
+let VOICE=null;function pickVoice(){const vs=(speechSynthesis.getVoices()||[]).filter(v=>/^en[-_]US/i.test(v.lang));const pref=[/premium/i,/enhanced/i,/siri/i,/^ava/i,/^zoe/i,/^samantha/i,/^allison/i,/^susan/i,/google us english/i];for(const r of pref){const v=vs.find(v=>r.test(v.name));if(v){VOICE=v;return}}VOICE=vs.find(v=>v.localService)||vs[0]||null}
+if(window.speechSynthesis){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 const LN={A:'ay',B:'bee',C:'see',D:'dee',E:'ee',F:'eff',G:'jee',H:'aitch',I:'eye',J:'jay',K:'kay',L:'ell',M:'em',N:'en',O:'oh',P:'pee',Q:'cue',R:'ar',S:'ess',T:'tee',U:'you',V:'vee',W:'double you',X:'ex',Y:'why',Z:'zee'};
-function say(t){t=String(t).replace(/(^|[^A-Za-z])([A-Z])(?![A-Za-z])/g,(m,a,b)=>a+LN[b]);const s=window.speechSynthesis;if(!s)return;const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;u.pitch=1.2;u.volume=1;
+function say(t){t=String(t).replace(/(^|[^A-Za-z])([A-Z])(?![A-Za-z])/g,(m,a,b)=>a+LN[b]);const s=window.speechSynthesis;if(!s)return;const u=new SpeechSynthesisUtterance(t);u.lang='en-US';if(VOICE)u.voice=VOICE;u.rate=.85;u.pitch=1.1;u.volume=1;
  try{if(s.speaking||s.pending)s.cancel();s.resume();s.speak(u);}catch(e){}}
 function bounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce')}
 let sel=null,solved=false;
