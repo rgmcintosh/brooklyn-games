@@ -9,9 +9,8 @@ html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:non
 #picker{position:fixed;top:10px;left:0;right:0;display:flex;justify-content:center;gap:10px;z-index:4}
 #picker button{width:70px;height:70px;border-radius:20px;border:4px solid #fff;background:#fff;box-shadow:0 4px 10px #0003;padding:6px}
 #picker button.on{border-color:#ff4fa3;background:#ffe3f1}
-#picker button[data-s=icecream]{position:fixed;left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom))}
 #picker svg{width:100%;height:100%}
-#stage{position:fixed;left:0;right:0;top:95px;bottom:90px;display:flex;align-items:center;justify-content:center;perspective:1400px}
+#stage{position:fixed;left:0;right:0;top:95px;bottom:0;display:flex;align-items:center;justify-content:center;perspective:1400px}
 #board{position:relative;transition:transform .9s cubic-bezier(.5,-.2,.5,1.2);transform-style:preserve-3d}
 .b{position:absolute;border-radius:50%;touch-action:none;transition:transform .12s;
  box-shadow:inset -6px -8px 12px rgba(0,0,0,.25),inset 6px 8px 12px rgba(255,255,255,.6),0 6px 8px rgba(0,0,0,.25)}
@@ -46,7 +45,7 @@ function cells(){const S=SHAPES[shape],out=[];
  if(S.tri){for(let y=0;y<S.r;y++){const n=y+2;for(let i=0;i<n&&i<S.c;i++)out.push([(S.c-n)/2+i,y]);}return out;}
  for(let y=0;y<S.r;y++)for(let x=0;x<S.c;x++)if(S.m(x,y))out.push([x,y]);return out;}
 function build(){[...picker.children].forEach(b=>b.classList.toggle('on',b.dataset.s==shape));
- const S=SHAPES[shape];const W=innerWidth-20,H=innerHeight-205;const g=Math.floor(Math.min(W/(S.c+.7),H/(S.r+.7),150));
+ const S=SHAPES[shape];const W=innerWidth-20,H=innerHeight-115;const g=Math.floor(Math.min(W/(S.c+.7),H/(S.r+.7),150));
  const pad=g*.35;board.innerHTML='';board.style.width=S.c*g+pad*2+'px';board.style.height=S.r*g+pad*2+'px';
  const off=side*2;
  board.style.background=shape=='icecream'?'linear-gradient(#ffd1ec '+(pad+5*g)+'px,#e8b878 '+(pad+5*g)+'px)':'linear-gradient(135deg,#ffffffcc,#ffe9f5cc)';
