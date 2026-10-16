@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Brooklyn's Finger Paint</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:none;background:#fff;font-family:sans-serif}
+#pad{position:fixed;left:0;top:0;right:0;bottom:110px;touch-action:none}
+#bar{position:fixed;left:0;right:0;bottom:0;height:110px;background:linear-gradient(#ffe0f0,#e1bee7);display:flex;align-items:center;justify-content:space-evenly;flex-wrap:nowrap;overflow-x:auto;padding:0 6px}
+.k{flex:0 0 auto;width:62px;height:62px;border-radius:50%;border:5px solid #fff;box-shadow:0 4px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:32px;background:#fff;margin:0 3px}
+.k.on{transform:scale(1.25);border-color:#333}
+</style></head><body>
+<canvas id="pad"></canvas><div id="bar"></div>
+<script>
+const cv=document.getElementById('pad'),x=cv.getContext('2d'),bar=document.getElementById('bar');
+const cols=['#f44336','#ff9800','#ffeb3b','#4caf50','#2196f3','#9c27b0','#f48fb1','#795548','#000000','rainbow'];
+let cur=cols[0],hue=0,sizeI=1;const sizes=[12,24,44];
+function rs(){const d=document.createElement('canvas');d.width=cv.width;d.height=cv.height;if(cv.width)d.getContext('2d').drawImage(cv,0,0);
+ cv.width=innerWidth;cv.height=innerHeight-110;x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(d,0,0)}
+rs();addEventListener('resize',rs);
+function btn(html,bg,fn){const b=document.createElement('div');b.className='k';b.innerHTML=html;if(bg)b.style.background=bg;b.onpointerdown=e=>{e.preventDefault();fn(b)};bar.appendChild(b);return b}
+const all=[];
+cols.forEach(c=>all.push(btn(c==='rainbow'?'🌈':'',c==='rainbow'?'conic-gradient(red,orange,yellow,lime,cyan,blue,violet,red)':c,b=>{cur=c;sel(b)})));
+all.push(btn('🧽','',b=>{cur='erase';sel(b)}));
+btn('🖌️','',b=>{sizeI=(sizeI+1)%3;b.style.fontSize=(20+sizeI*10)+'px'});
+btn('🗑️','',()=>{x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height)});
+function sel(b){all.forEach(q=>q.classList.remove('on'));b.classList.add('on')}sel(all[0]);
+const last={};
+function col(){if(cur==='erase')return'#fff';if(cur==='rainbow'){hue=(hue+4)%360;return'hsl('+hue+',90%,55%)'}return cur}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);last[e.pointerId]={x:e.offsetX,y:e.offsetY};dot(e.offsetX,e.offsetY)});
+cv.addEventListener('pointermove',e=>{const l=last[e.pointerId];if(!l)return;x.strokeStyle=col();x.lineWidth=cur==='erase'?sizes[sizeI]*2:sizes[sizeI];
+ x.lineCap=x.lineJoin='round';x.beginPath();x.moveTo(l.x,l.y);x.lineTo(e.offsetX,e.offsetY);x.stroke();last[e.pointerId]={x:e.offsetX,y:e.offsetY}});
+['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,e=>delete last[e.pointerId]));
+function dot(a,b){x.fillStyle=col();x.beginPath();x.arc(a,b,(cur==='erase'?sizes[sizeI]*2:sizes[sizeI])/2,0,7);x.fill()}
+</script></body></html>

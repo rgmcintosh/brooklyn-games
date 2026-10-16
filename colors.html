@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Brooklyn's Color Game</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation;font-family:'Comic Sans MS','Chalkboard SE',sans-serif;background:linear-gradient(#fff9c4,#ffe0f0);user-select:none}
+#top{height:45%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#prompt{font-size:min(9vw,60px);color:#555;margin-bottom:10px}
+#big{font-size:min(30vw,180px);transition:transform .3s}
+#row{height:45%;display:flex;align-items:center;justify-content:space-evenly}
+.b{width:min(26vw,190px);height:min(26vw,190px);border-radius:50%;border:8px solid #fff;box-shadow:0 8px 18px rgba(0,0,0,.2);cursor:pointer;transition:transform .15s}
+.b:active{transform:scale(.92)}
+.wig{animation:w .4s}@keyframes w{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+#score{position:fixed;left:14px;top:10px;font-size:34px}
+canvas{position:fixed;inset:0;pointer-events:none}
+</style></head><body>
+<div id="score">🌟 0</div>
+<div id="top"><div id="prompt">Tap to start!</div><div id="big">🎈</div></div>
+<div id="row"></div><canvas id="cf"></canvas>
+<script>
+const C=[{n:'red',c:'#f44336',e:'🍎'},{n:'blue',c:'#2196f3',e:'🐳'},{n:'yellow',c:'#ffeb3b',e:'🌞'},{n:'green',c:'#4caf50',e:'🐸'},
+{n:'orange',c:'#ff9800',e:'🍊'},{n:'purple',c:'#9c27b0',e:'🍇'},{n:'pink',c:'#f48fb1',e:'🐷'}];
+let target,score=0,started=false,busy=false;
+const row=document.getElementById('row'),big=document.getElementById('big'),pr=document.getElementById('prompt');
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.9;u.pitch=1.3;speechSynthesis.speak(u)}catch(e){}}
+function round(){busy=false;const opts=C.slice().sort(()=>Math.random()-.5).slice(0,3);target=opts[Math.floor(Math.random()*3)];
+ big.textContent=target.e;pr.innerHTML='Find <b style="color:'+target.c+';text-shadow:0 0 3px #0005">'+target.n+'</b>!';say('Find '+target.n+'!');
+ row.innerHTML='';opts.forEach(o=>{const d=document.createElement('div');d.className='b';d.style.background=o.c;
+  d.onpointerdown=()=>pick(o,d);row.appendChild(d)})}
+function pick(o,d){if(busy)return;if(o===target){busy=true;score++;document.getElementById('score').textContent='🌟 '+score;
+  say(['Yay!','Great job!','You did it!','Woohoo!'][Math.floor(Math.random()*4)]+' '+o.n+'!');big.style.transform='scale(1.3) rotate(10deg)';
+  setTimeout(()=>big.style.transform='',400);boom(o.c);setTimeout(round,1800)}
+ else{d.classList.remove('wig');void d.offsetWidth;d.classList.add('wig');say('That is '+o.n+'. Try again!')}}
+document.body.addEventListener('pointerdown',()=>{if(!started){started=true;round()}},{once:false});
+const cv=document.getElementById('cf'),x=cv.getContext('2d');let P=[];
+function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();addEventListener('resize',rs);
+function boom(c){for(let i=0;i<80;i++)P.push({x:innerWidth/2,y:innerHeight*.3,vx:(Math.random()-.5)*14,vy:-Math.random()*12-2,c:Math.random()<.6?c:C[Math.floor(Math.random()*7)].c,l:1,r:5+Math.random()*7})}
+(function f(){x.clearRect(0,0,cv.width,cv.height);P=P.filter(p=>(p.vy+=.35,p.x+=p.vx,p.y+=p.vy,p.l-=.012,p.l>0));
+ P.forEach(p=>{x.globalAlpha=p.l;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()});x.globalAlpha=1;requestAnimationFrame(f)})();
+</script></body></html>
