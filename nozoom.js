@@ -1,5 +1,5 @@
 (function(){
-var VC='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover';
+var VC='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
 var m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m)}m.content=VC;
 var s=document.createElement('style');s.textContent='*{touch-action:manipulation}canvas{touch-action:none}html,body{-webkit-text-size-adjust:100%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}'+
 '#zoomReset{position:fixed;right:12px;bottom:12px;z-index:99999;width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:#ff4f9a;color:#fff;font-size:30px;box-shadow:0 4px 12px #0005;display:none;align-items:center;justify-content:center;touch-action:manipulation}';
@@ -20,3 +20,12 @@ function addBtn(){var b=document.createElement('button');b.id='zoomReset';b.text
  if(vv){vv.addEventListener('resize',upd);vv.addEventListener('scroll',upd)}upd()}
 if(document.body)addBtn();else document.addEventListener('DOMContentLoaded',addBtn);
 })();
+
+// Auto snap-back: if Safari ever zooms (or restores a zoomed state on reload), reset to 100%
+(function(){var vv=window.visualViewport;if(!vv)return;var busy=false;
+function snap(){if(busy||vv.scale<=1.01)return;busy=true;var mm=document.querySelector('meta[name=viewport]');
+ mm.content='width=device-width, initial-scale=1, maximum-scale=1.01';
+ setTimeout(function(){mm.content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';window.scrollTo(0,0);busy=false;if(vv.scale>1.01)setTimeout(snap,300)},80)}
+vv.addEventListener('resize',function(){setTimeout(snap,250)});
+window.addEventListener('pageshow',function(){setTimeout(snap,200)});window.addEventListener('load',function(){setTimeout(snap,200)});
+document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(snap,200)});})();
