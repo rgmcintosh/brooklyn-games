@@ -44,13 +44,14 @@ const W=[['A','apple','🍎'],['B','ball','⚽'],['C','cat','🐱'],['D','dog','
 const COL=['#ff3b3b','#ff9a1f','#e6b800','#2fbf3a','#2e8bff','#a64dff','#ff4fc1','#00b8a9'];
 let i=0,target=0,busy=false;
 const $=id=>document.getElementById(id);
-function say(t){const s=window.speechSynthesis;if(!s)return;const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;u.pitch=1.2;u.volume=1;
+const LN={A:'ay',B:'bee',C:'see',D:'dee',E:'ee',F:'eff',G:'jee',H:'aitch',I:'eye',J:'jay',K:'kay',L:'ell',M:'em',N:'en',O:'oh',P:'pee',Q:'cue',R:'ar',S:'ess',T:'tee',U:'you',V:'vee',W:'double you',X:'ex',Y:'why',Z:'zee'};
+function say(t){t=String(t).replace(/(^|[^A-Za-z])([A-Z])(?![A-Za-z])/g,(m,a,b)=>a+LN[b]);const s=window.speechSynthesis;if(!s)return;const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;u.pitch=1.2;u.volume=1;
  try{if(s.speaking||s.pending)s.cancel();s.resume();s.speak(u);}catch(e){}}
 function bounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce')}
 let sel=null,solved=false;
 const POOL={A:[['apple','🍎'],['ant','🐜'],['airplane','✈️'],['alligator','🐊']],B:[['ball','⚽'],['bee','🐝'],['banana','🍌'],['bear','🐻'],['bus','🚌']],C:[['cat','🐱'],['car','🚗'],['cake','🎂'],['cow','🐮']],D:[['dog','🐶'],['duck','🦆'],['dinosaur','🦕'],['donut','🍩']],E:[['elephant','🐘'],['egg','🥚'],['eagle','🦅']],F:[['fish','🐟'],['frog','🐸'],['flower','🌸'],['fox','🦊']],G:[['grapes','🍇'],['giraffe','🦒'],['goat','🐐'],['gift','🎁']],H:[['house','🏠'],['horse','🐴'],['hat','🎩'],['heart','❤️']],I:[['ice cream','🍦'],['igloo','🛖'],['ice','🧊']],J:[['jellyfish','🪼'],['juice','🧃'],['jar','🫙']],K:[['kite','🪁'],['koala','🐨'],['key','🔑'],['kangaroo','🦘']],L:[['lion','🦁'],['lemon','🍋'],['ladybug','🐞'],['leaf','🍃']],M:[['moon','🌙'],['monkey','🐵'],['mouse','🐭'],['milk','🥛']],N:[['nest','🪺'],['nose','👃'],['nut','🥜']],O:[['octopus','🐙'],['owl','🦉'],['orange','🍊']],P:[['pig','🐷'],['penguin','🐧'],['pizza','🍕'],['panda','🐼']],Q:[['queen','👸']],R:[['rainbow','🌈'],['rabbit','🐰'],['rocket','🚀'],['robot','🤖']],S:[['sun','☀️'],['star','⭐'],['snake','🐍'],['strawberry','🍓']],T:[['tiger','🐯'],['turtle','🐢'],['train','🚂'],['tree','🌳']],U:[['umbrella','☂️'],['unicorn','🦄']],V:[['volcano','🌋'],['violin','🎻']],W:[['whale','🐳'],['watermelon','🍉'],['worm','🪱']],X:[['xylophone','🎶'],['x-ray','🩻']],Y:[['yo-yo','🪀'],['yarn','🧶']],Z:[['zebra','🦓'],['zero','0️⃣']]};
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
-function show(speak){{const pl=POOL[W[i][0]];if(pl){let c;do{c=rnd(pl)}while(pl.length>1&&c[0]===W[i][1]);W[i][1]=c[0];W[i][2]=c[1];}}const [L,w,e]=W[i];solved=false;sel=null;$('pemo').textContent=e;$('slot').textContent='';$('slot').className='';$('slot').dataset.ghost=L.toLowerCase();
+function show(speak){{const pl=POOL[W[i][0]];if(pl){let c;do{c=rnd(pl)}while(pl.length>1&&c[0]===W[i][1]);W[i][1]=c[0];W[i][2]=c[1];}}const [L,w,e]=W[i];solved=false;sel=null;$('pemo').textContent=e;$('slot').textContent='';$('slot').className='';$('slot').dataset.ghost=L;
  $('prest').textContent=w.slice(1);bounce($('pemo'));buildTray();if(speak)say(w+'!');}
 function buildTray(){const t=$('tray');t.innerHTML='';W.forEach((x,n)=>{const d=document.createElement('div');d.className='lt';d.textContent=x[0];d.dataset.n=n;d.style.color=COL[n%COL.length];
  d.addEventListener('pointerdown',ev=>startDrag(ev,d));t.appendChild(d)})}
@@ -65,7 +66,7 @@ function startDrag(ev,d){ev.preventDefault();if(solved)return;const sx=ev.client
 tap($('slot'),()=>{if(sel&&!solved)place(+sel.dataset.n,sel)});
 tap($('pemo'),()=>say(W[i][1]+'!'));
 function place(n,d){if(solved)return;const [L,w]=W[i];
- if(n===i){solved=true;window.lastSuccess=L;const s=$('slot');s.textContent=L.toLowerCase();s.style.color=COL[i%COL.length];s.className='done';d.style.visibility='hidden';
+ if(n===i){solved=true;window.lastSuccess=L;const s=$('slot');s.textContent=L;s.style.color=COL[i%COL.length];s.className='done';d.style.visibility='hidden';
   say(L+'... '+w+'!');bounce($('pword'));confetti();setTimeout(cheer,1600);setTimeout(()=>{let n;do{n=Math.floor(Math.random()*26)}while(n===i);i=n;show(true)},2800)}
  else{d.classList.remove('sel','wig');void d.offsetWidth;d.classList.add('wig');sel=null;say("That's "+W[n][0]+'. Try again!')}}
 function tap(el,f){el.addEventListener('pointerdown',e=>{e.preventDefault();f(e)})}
