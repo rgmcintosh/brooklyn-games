@@ -33,8 +33,8 @@ const SHAPES={
  square:{icon:'<rect x="15" y="15" width="70" height="70" rx="10" fill="#2e8bff"/>',c:5,r:5,m:()=>true},
  circle:{icon:'<circle cx="50" cy="50" r="40" fill="#3ed94a"/>',c:7,r:7,m:(x,y)=>(x-3)**2+(y-3)**2<=11},
  triangle:{icon:'<polygon points="50,10 92,88 8,88" fill="#ff9a1f"/>',c:7,r:6,tri:true},
- icecream:{icon:'<circle cx="50" cy="35" r="28" fill="#ff4fc1"/><polygon points="25,50 75,50 50,95" fill="#d9a05b"/>',c:7,r:9,
-   m:(x,y)=>y<4?(x-3)**2+(y-2)**2<=10.5:Math.abs(x-3)<=(8-y)*0.75}
+ icecream:{icon:'<path d="M14,48 A36,34 0 0 1 86,48 Q86,56 78,56 L22,56 Q14,56 14,48Z" fill="#ff4fc1"/><polygon points="22,56 78,56 50,97" fill="#d9a05b"/>',c:9,r:9,
+   m:(x,y)=>y<=4?(y==4||((x-4)/4.7)**2+((y-4)/4.2)**2<=1):Math.abs(x-4)<=(9-y)*0.75}
 };
 let shape='rainbow',side=0,left=0,actx=null,busy=false;
 const board=document.getElementById('board'),picker=document.getElementById('picker');
@@ -48,7 +48,7 @@ function build(){[...picker.children].forEach(b=>b.classList.toggle('on',b.datas
  const S=SHAPES[shape];const W=innerWidth-20,H=innerHeight-115;const g=Math.floor(Math.min(W/(S.c+.7),H/(S.r+.7),150));
  const pad=g*.35;board.innerHTML='';board.style.width=S.c*g+pad*2+'px';board.style.height=S.r*g+pad*2+'px';
  const off=side*2;
- board.style.background=shape=='icecream'?'linear-gradient(#ffd1ec 45%,#e8b878 45%)':'linear-gradient(135deg,#ffffffcc,#ffe9f5cc)';
+ board.style.background=shape=='icecream'?'linear-gradient(#ffd1ec '+(pad+5*g)+'px,#e8b878 '+(pad+5*g)+'px)':'linear-gradient(135deg,#ffffffcc,#ffe9f5cc)';
  board.style.borderRadius=shape=='circle'?'50%':g*.4+'px';
  board.style.boxShadow='0 12px 30px #0003, inset 0 0 0 6px #fff';
  const cs=cells();left=cs.length;
@@ -72,4 +72,8 @@ function flip(){busy=true;const y=document.getElementById('yay');y.style.display
    board.style.transition='';board.style.transform='rotateY(0)';setTimeout(()=>busy=false,900);},900);},900);}
 addEventListener('resize',()=>{if(!busy){const p=[...board.children].map(b=>b.classList.contains('p'));build();[...board.children].forEach((b,i)=>{if(p[i]){b.classList.add('p');left--}});}});
 build();window.__test={flip:()=>side};
-</script></body></html>
+</script><script>(function(){var o={passive:false,capture:true};
+document.addEventListener('touchstart',function(e){if(!e.target.closest('a'))e.preventDefault()},o);
+document.addEventListener('touchend',function(e){if(!e.target.closest('a'))e.preventDefault()},o);
+document.addEventListener('dblclick',function(e){e.preventDefault()},o);})();</script>
+</body></html>
