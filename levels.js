@@ -8,9 +8,9 @@ document.head.appendChild(st);
 var ind,ov,busy=false;
 function ensure(){if(ind)return;ind=document.createElement('div');ind.id='lvInd';ov=document.createElement('div');ov.id='lvOv';document.body.appendChild(ind);document.body.appendChild(ov);draw()}
 function draw(){if(ind)ind.textContent='⭐'.repeat(Math.min(LV.level,10))}
-window.LV={level:1,busy:function(){return busy},onScene:null,
+window.LV={level:1,msg:null,busy:function(){return busy},onScene:null,
  up:function(name){ensure();if(busy)return;busy=true;
-  ov.innerHTML='<div class="msg">You did it! 🎉</div>';ov.style.display='flex';
+  ov.innerHTML='<div class="msg">'+(LV.msg||'You did it! 🎉')+'</div>';ov.style.display='flex';
   var em=['⭐','🌟','🎉','✨','🎊','💖','🌈'];
   for(var i=0;i<40;i++){var s=document.createElement('div');s.className='cf';s.textContent=em[i%em.length];var a=Math.random()*6.28,r=30+Math.random()*50;
    s.style.left='50%';s.style.top='50%';s.style.setProperty('--dx',Math.cos(a)*r+'vw');s.style.setProperty('--dy',Math.sin(a)*r+'vh');s.style.animationDelay=(Math.random()*.3)+'s';ov.appendChild(s)}
