@@ -210,7 +210,7 @@ function openWF(){if(mgOpen)return;mgOpen=true;mg.className='wfm';
  mg.innerHTML='<div class="wfall"></div><div class="wcliff"></div><div class="wrain"></div><div class="wpool"></div>'+
   '<div class="wleaf" style="left:-3vmin;top:28%">🌿</div><div class="wleaf" style="right:-3vmin;top:36%">🌴</div><div class="wleaf" style="left:4vmin;bottom:30%;font-size:12vmin">🪨</div>'+
   '<div class="wtitle">CATCH THE FISH!</div><div class="wdots"></div><div class="wbucket">🪣</div>'+
-  '<button id="back">🌴</button><div id="yay">YAY! 🎉</div><button id="again">🔄</button>';
+  '<button id="back">🌴</button><div id="yay">HOORAY! 🎉</div><button id="again">🔄</button>';
  mg.style.display='block';
  for(let k=0;k<5;k++){const m=document.createElement('div');m.className='wmist';const sz=12+Math.random()*8;Object.assign(m.style,{width:sz+'vmin',height:sz*.6+'vmin',left:(30+k*10-sz/2)+'%',bottom:'27%',animationDelay:(k*.25)+'s'});mg.appendChild(m)}
  document.getElementById('back').onclick=closeWF;
@@ -246,7 +246,7 @@ function catchJ(j){if(j.got||!wf||wf.done)return;j.got=true;wf.n++;const n=wf.n;
  setTimeout(()=>{j.el.remove();j.gone=true;const bk=mg.querySelector('.wbucket');if(bk){bk.style.transform='scale(1.2) rotate(-8deg)';setTimeout(()=>bk.style.transform='',200)}},620);
  const d=mg.querySelectorAll('.wdots span')[n-1];if(d){d.textContent=j.e;d.classList.add('on');setTimeout(()=>d.classList.remove('on'),300)}
  if(n>=WG)winWF();else say(NUMS[n-1]+'!')}
-function winWF(){wf.done=true;cheer();say('Yay! You caught them all!');
+function winWF(){wf.done=true;cheer();say('Hooray! You caught them all!');
  mg.querySelector('.wrain').classList.add('on');document.getElementById('yay').style.display='block';
  const em=['🌈','⭐','🎉','✨','🐟','🐸','💦','🎊'];for(let i=0;i<44;i++){const s=document.createElement('div');s.className='wcf';s.textContent=em[i%em.length];const a=Math.random()*6.28,r=30+Math.random()*50;
   s.style.setProperty('--dx',Math.cos(a)*r+'vw');s.style.setProperty('--dy',Math.sin(a)*r+'vh');s.style.animationDelay=(Math.random()*.3)+'s';mg.appendChild(s);setTimeout(()=>s.remove(),2400)}
