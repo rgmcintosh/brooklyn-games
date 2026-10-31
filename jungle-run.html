@@ -246,7 +246,7 @@ function catchJ(j){if(j.got||!wf||wf.done)return;j.got=true;wf.n++;const n=wf.n;
  const b=mg.querySelector('.wbucket').getBoundingClientRect();j.el.classList.add('got');
  requestAnimationFrame(()=>{j.el.style.left=(b.left+b.width/2-rc.width/2)+'px';j.el.style.top=(b.top+b.height*.3-rc.height/2)+'px';j.el.style.transform='scale(.35)';j.el.style.opacity='.2'});
  setTimeout(()=>{j.el.remove();j.gone=true;const bk=mg.querySelector('.wbucket');if(bk){bk.style.transform='scale(1.2) rotate(-8deg)';setTimeout(()=>bk.style.transform='',200)}},620);
- const d=mg.querySelectorAll('.wdots span')[n-1];if(d){d.innerHTML=j.e==='RED'?'<span style="display:inline-block;width:1.3em;height:.8em">'+REDFISH+'</span>':j.e;d.classList.add('on');setTimeout(()=>d.classList.remove('on'),300)}
+ const d=mg.querySelectorAll('.wdots span')[n-1];if(d){d.innerHTML=j.e==='RED'?'<i style="display:inline-block;width:1.3em;height:.8em">'+REDFISH+'</i>':j.e;d.classList.add('on');setTimeout(()=>d.classList.remove('on'),300)}
  if(n>=WG)winWF();else say(NUMS[n-1]+'!')}
 function winWF(){wf.done=true;cheer();say('Hooray! You caught them all!');
  mg.querySelector('.wrain').classList.add('on');document.getElementById('yay').style.display='block';
