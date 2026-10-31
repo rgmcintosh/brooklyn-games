@@ -204,7 +204,9 @@ function bigFall(u){const r=wfR(),night=sc.n=='jungle night',pulse=.5+.5*Math.si
 c.addEventListener('pointerdown',e=>{if(mgOpen||cool>0)return;if(inFall(e.clientX,e.clientY)){e.stopImmediatePropagation();me.tx=me.x;me.ty=me.y;openWF()}});
 
 // ===== Inside the waterfall: CATCH THE FISH =====
-const WG=8,JUMP=['🐟','🐠','🐸','🐡','🐟','🐸'],NUMS=['one','two','three','four','five','six','seven','eight'];
+const WG=8,JUMP=['🐟','🐠','🐸','RED','🐟','🐸'],NUMS=['one','two','three','four','five','six','seven','eight'];
+const REDFISH='<svg viewBox="0 0 120 70" width="100%" height="100%" style="display:block"><path d="M88 35 L116 14 L110 35 L116 56 Z" fill="#b5441b"/><path d="M50 12 Q62 2 74 14 Z" fill="#a8401a"/><ellipse cx="52" cy="35" rx="44" ry="20" fill="#d2602a"/><ellipse cx="50" cy="42" rx="36" ry="10" fill="#f2b48a"/><circle cx="84" cy="30" r="6" fill="#111"/><circle cx="22" cy="30" r="5" fill="#fff"/><circle cx="21" cy="30" r="2.6" fill="#111"/><path d="M10 38 Q16 41 22 39" stroke="#7a2a10" stroke-width="2" fill="none"/></svg>';
+const fishHTML=e=>e==='RED'?REDFISH:e;
 let wf=null;
 function openWF(){if(mgOpen)return;mgOpen=true;mg.className='wfm';
  mg.innerHTML='<div class="wfall"></div><div class="wcliff"></div><div class="wrain"></div><div class="wpool"></div>'+
@@ -222,7 +224,7 @@ function startWF(){if(wf){cancelAnimationFrame(wf.raf);clearTimeout(wf.auto)}
  mg.querySelector('.wrain').classList.remove('on');document.getElementById('yay').style.display='none';document.getElementById('again').style.display='none';
  wf={n:0,list:[],last:0,done:false,raf:0,auto:0};wf.last=performance.now()-2000;wf.raf=requestAnimationFrame(wfTick)}
 function wfSpawn(){const S=Math.max(80,Math.min(Math.min(W,H)*.22,180)),el=document.createElement('div');el.className='wj';
- const e=JUMP[Math.random()*JUMP.length|0];el.textContent=e;Object.assign(el.style,{width:S*1.35+'px',height:S*1.35+'px',fontSize:S+'px'});
+ const e=JUMP[Math.random()*JUMP.length|0];el.innerHTML=fishHTML(e);Object.assign(el.style,{width:S*1.35+'px',height:S*1.35+'px',fontSize:S+'px'});
  const x0=W*(.2+Math.random()*.6),dx=(Math.random()<.5?-1:1)*W*(.08+Math.random()*.12),y0=H*.82,h=H*(.32+Math.random()*.16);
  const j={el,e,S,x0,dx,y0,h,t0:performance.now(),dur:4200,got:false};
  el.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();catchJ(j)});
@@ -244,7 +246,7 @@ function catchJ(j){if(j.got||!wf||wf.done)return;j.got=true;wf.n++;const n=wf.n;
  const b=mg.querySelector('.wbucket').getBoundingClientRect();j.el.classList.add('got');
  requestAnimationFrame(()=>{j.el.style.left=(b.left+b.width/2-rc.width/2)+'px';j.el.style.top=(b.top+b.height*.3-rc.height/2)+'px';j.el.style.transform='scale(.35)';j.el.style.opacity='.2'});
  setTimeout(()=>{j.el.remove();j.gone=true;const bk=mg.querySelector('.wbucket');if(bk){bk.style.transform='scale(1.2) rotate(-8deg)';setTimeout(()=>bk.style.transform='',200)}},620);
- const d=mg.querySelectorAll('.wdots span')[n-1];if(d){d.textContent=j.e;d.classList.add('on');setTimeout(()=>d.classList.remove('on'),300)}
+ const d=mg.querySelectorAll('.wdots span')[n-1];if(d){d.innerHTML=j.e==='RED'?'<span style="display:inline-block;width:1.3em;height:.8em">'+REDFISH+'</span>':j.e;d.classList.add('on');setTimeout(()=>d.classList.remove('on'),300)}
  if(n>=WG)winWF();else say(NUMS[n-1]+'!')}
 function winWF(){wf.done=true;cheer();say('Hooray! You caught them all!');
  mg.querySelector('.wrain').classList.add('on');document.getElementById('yay').style.display='block';
