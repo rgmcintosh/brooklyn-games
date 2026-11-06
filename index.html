@@ -5,9 +5,9 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{font-family:"Arial Rounded MT Bold","Nunito","Comic Sans MS",ui-rounded,system-ui,sans-serif;background:linear-gradient(135deg,#fff9c4,#ffe0f0 50%,#d7f0ff);display:flex;flex-direction:column;height:100vh;height:100dvh;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));-webkit-user-select:none;user-select:none;overflow:hidden}
+body{font-family:"Arial Rounded MT Bold","Nunito","Comic Sans MS",ui-rounded,system-ui,sans-serif;background:linear-gradient(135deg,#fff9c4,#ffe0f0 50%,#d7f0ff);display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));-webkit-user-select:none;user-select:none;overflow-x:hidden;overflow-y:auto}
 h1{margin:0 0 6px;font-size:clamp(16px,min(3.4vh,6vw),32px);line-height:1.1;color:#e0408a;text-align:center;text-shadow:0 2px 0 #fff}
-.grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(6,1fr);grid-auto-flow:dense;gap:clamp(6px,min(1.6vh,1.6vw),14px);min-height:0}
+.grid{flex:none;height:calc(100dvh - 20px);min-height:480px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);grid-auto-flow:dense;gap:clamp(6px,min(1.6vh,1.6vw),14px);min-height:0}
 a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:clamp(14px,3vmin,32px);text-decoration:none;color:#fff;font-weight:900;text-shadow:0 3px 0 #0003;box-shadow:0 8px 0 #0002,0 12px 24px #0002;animation:bob 3.2s ease-in-out infinite;transition:transform .12s;-webkit-tap-highlight-color:transparent;overflow:hidden;min-height:0}
 a:active{transform:scale(.92) translateY(4px)!important;animation-play-state:paused;box-shadow:0 3px 0 #0002}
 a .e{font-size:clamp(22px,min(8vh,9vw),90px);line-height:1;animation:wig 2.6s ease-in-out infinite}
@@ -21,9 +21,30 @@ a:nth-child(even) .e{animation-delay:-1.3s}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(.6deg)}}
 @keyframes wig{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.06)}}
 .c1{background:linear-gradient(135deg,#ff6fb5,#ff9a5a)}.c2{background:linear-gradient(135deg,#8a6cff,#47c6ff)}.c3{background:linear-gradient(135deg,#4cd964,#1fb5a8)}.c4{background:linear-gradient(135deg,#2f9bff,#38e0e0)}.c5{background:linear-gradient(135deg,#ffb300,#ff6a3d)}.c6{background:linear-gradient(135deg,#ff5fa2,#b45cff)}.c8{background:linear-gradient(135deg,#7ad0ff,#7b5cff)}.c7{background:linear-gradient(135deg,#ffd93d,#ff8fab)}.c9{background:linear-gradient(135deg,#8bc34a,#2e7d32)}.c10{background:linear-gradient(135deg,#26c6a0,#5d8a3a)}
+#music-classroom{position:relative;flex:none;height:clamp(300px,52dvh,560px);margin:0 0 14px;border-radius:clamp(16px,3vmin,32px);overflow:hidden;background:linear-gradient(#ffe6f2 0 66%,#f6c38f 66%);box-shadow:0 8px 0 #0002,inset 0 0 0 6px #fff8}
+#music-classroom h2{position:absolute;top:3%;left:0;right:0;margin:0;text-align:center;font-size:clamp(20px,4.4vmin,40px);color:#8a3cff;text-shadow:0 2px 0 #fff}
+.room-svg{position:absolute;inset:0;width:100%;height:100%}
+.inst{position:absolute;bottom:6%;width:18%;height:58%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;color:#5a2a7a;text-shadow:0 2px 0 #fff;font-weight:900;font-size:clamp(13px,2.8vmin,26px);text-decoration:none;background:none;box-shadow:none;animation:bob 3s ease-in-out infinite;border-radius:24px;-webkit-tap-highlight-color:transparent}
+.inst:active{background:#fff6}.inst .ic{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;font-size:clamp(46px,13vmin,130px);line-height:1}.inst svg{width:90%;height:auto;max-height:100%}
+.inst:nth-of-type(1){left:1%}.inst:nth-of-type(2){left:20.5%;animation-delay:-.6s}.inst:nth-of-type(3){left:40.5%;animation-delay:-1.2s}.inst:nth-of-type(4){left:60.5%;animation-delay:-1.8s}.inst:nth-of-type(5){left:80.5%;animation-delay:-2.4s}
 @media (max-height:500px){h1{margin-bottom:3px}a{box-shadow:0 4px 0 #0002}}
 </style></head>
-<body><h1>Brooklyn's Games 🐝</h1><div class="grid">
+<body><h1>Brooklyn's Games 🐝</h1>
+<section id="music-classroom" aria-label="Music Classroom">
+<svg class="room-svg" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
+<rect x="380" y="40" width="240" height="150" rx="16" fill="#bfe8ff" stroke="#fff" stroke-width="12"/><line x1="500" y1="40" x2="500" y2="190" stroke="#fff" stroke-width="8"/><circle cx="440" cy="90" r="26" fill="#ffd93d"/>
+<path d="M60 70 h70 v-10 h-70z M60 70 v50 M130 60 v50" stroke="#ff6fb5" stroke-width="8" fill="none"/><circle cx="52" cy="122" r="12" fill="#ff6fb5"/><circle cx="122" cy="112" r="12" fill="#ff6fb5"/>
+<path d="M850 60 v60" stroke="#3fa9ff" stroke-width="8"/><circle cx="840" cy="122" r="14" fill="#3fa9ff"/><path d="M850 60 q25 10 20 35" stroke="#3fa9ff" stroke-width="8" fill="none"/>
+<text x="230" y="110" font-size="50" fill="#4cd964">♪</text><text x="700" y="90" font-size="56" fill="#ff9a3c">♫</text>
+<ellipse cx="500" cy="440" rx="460" ry="40" fill="#ff9ac8" opacity=".55"/></svg>
+<h2>🎵 Music Classroom 🎵</h2>
+<a class="inst" href="piano.html" aria-label="Piano"><div class="ic">🎹</div>Piano</a>
+<a class="inst" href="guitar.html" aria-label="Guitar"><div class="ic">🎸</div>Guitar</a>
+<a class="inst" href="drums.html" aria-label="Drums"><div class="ic">🥁</div>Drums</a>
+<a class="inst" href="xylophone.html" aria-label="Xylophone"><div class="ic"><svg viewBox="0 0 120 90"><g transform="rotate(-8 60 45)"><rect x="6" y="20" width="12" height="62" rx="5" fill="#ff4d4d"/><rect x="21" y="23" width="12" height="56" rx="5" fill="#ff9a3c"/><rect x="36" y="26" width="12" height="50" rx="5" fill="#ffd23d"/><rect x="51" y="29" width="12" height="44" rx="5" fill="#4cd964"/><rect x="66" y="32" width="12" height="38" rx="5" fill="#3fa9ff"/><rect x="81" y="35" width="12" height="32" rx="5" fill="#5b7bff"/><rect x="96" y="38" width="12" height="26" rx="5" fill="#b35cff"/></g><line x1="70" y1="4" x2="100" y2="30" stroke="#8a4b2a" stroke-width="5" stroke-linecap="round"/><circle cx="68" cy="4" r="7" fill="#ff6fb5"/></svg></div>Xylophone</a>
+<a class="inst" href="flute.html" aria-label="Flute"><div class="ic"><svg viewBox="0 0 120 90"><g transform="rotate(-20 60 45)"><rect x="4" y="38" width="112" height="16" rx="8" fill="#c9d3ff" stroke="#7b5cff" stroke-width="3"/><circle cx="18" cy="46" r="4" fill="#5a2a7a"/><circle cx="48" cy="46" r="5" fill="#ff4d4d"/><circle cx="62" cy="46" r="5" fill="#ffd23d"/><circle cx="76" cy="46" r="5" fill="#4cd964"/><circle cx="90" cy="46" r="5" fill="#3fa9ff"/><circle cx="104" cy="46" r="5" fill="#b35cff"/></g></svg></div>Flute</a>
+</section>
+<div class="grid">
 <a class="big c1" href="coloring.html"><div class="e">🖍️</div><span>Coloring Fun</span></a>
 <a class="big c2" href="popit.html"><div class="e">🫧</div><span>Pop It!</span></a>
 <a class="wide c3" href="dino.html"><div class="e">🦖</div><span>Dino Adventure</span></a>
@@ -34,6 +55,4 @@ a:nth-child(even) .e{animation-delay:-1.3s}
 <a class="c6" href="colors.html"><div class="e">🌈</div><span>Color Game</span></a>
 <a class="c7" href="abc.html"><div class="e">🔤</div><span>ABCs</span></a>
 <a class="c8" href="shapes.html"><div class="e">🔷</div><span>Shape Escape</span></a>
-<a class="wide c11" href="piano.html"><div class="e">🎹</div><span>Piano</span></a>
-<a class="wide c12" href="guitar.html"><div class="e">🎸</div><span>Guitar</span></a>
 </div></body></html>

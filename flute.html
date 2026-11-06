@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<script src="nozoom.js"></script><script>window.HOME_POS='left';window.HOME_HREF='index.html#music-classroom'</script><script src="home.js"></script><meta charset="utf-8"><title>Flute</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:"Arial Rounded MT Bold","Nunito","Comic Sans MS",ui-rounded,system-ui,sans-serif;background:linear-gradient(135deg,#fff9c4,#ffe0f0 50%,#d7f0ff);display:flex;flex-direction:column;height:100vh;height:100dvh;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));-webkit-user-select:none;user-select:none}
+h1{margin:4px 0 8px;font-size:clamp(20px,min(5vh,7vw),44px);color:#e0408a;text-align:center;text-shadow:0 2px 0 #fff}
+#inst{position:relative;flex:1;min-height:0;touch-action:none}
+
+#inst{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vmin}
+#fl{position:relative;width:96%;height:clamp(120px,32vmin,280px);border-radius:999px;background:linear-gradient(#f4f6ff,#c9d3ff 55%,#9aa8ef);box-shadow:0 10px 0 #0002,inset 0 0 0 .8vmin #7b5cff55;display:flex;align-items:center;gap:1.5%;padding:0 3% 0 15%}
+#fl:before{content:"";position:absolute;left:4%;top:50%;width:5%;aspect-ratio:1.6;transform:translateY(-50%);border-radius:50%;background:#5a2a7a}
+.h{flex:1;aspect-ratio:1;max-height:92%;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:clamp(20px,6vmin,54px);-webkit-text-stroke:1.5px #0005;text-shadow:0 2px 0 #0004;box-shadow:0 5px 0 #0003,inset 0 0 0 .7vmin #fff7;transition:transform .1s,filter .2s}
+.h.on{transform:scale(.9);filter:brightness(1.35);box-shadow:0 0 30px 10px #fff,0 2px 0 #0003}
+#notes{height:12vmin;font-size:9vmin;color:#ff6fb5;position:relative;width:100%}
+#notes span{position:absolute;bottom:0;animation:fly 1.4s ease-out forwards}@keyframes fly{to{transform:translateY(-14vmin) rotate(20deg);opacity:0}}
+@media (orientation:portrait){#inst{flex-direction:row}#notes{height:100%;width:12vmin}#fl{flex-direction:column;width:clamp(120px,24vw,220px);height:94%;padding:20% 0 4%}#fl:before{left:50%;top:5%;width:30%;transform:translateX(-50%)}.h{flex:1;width:auto;max-width:92%;max-height:none;min-height:0}}
+</style></head><body>
+<h1>🎶 Flute 🐦</h1>
+<div id="inst"><div id="notes"></div><div id="fl"></div></div>
+<script>
+var ac,master;
+function audio(){if(!ac){var C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ac=new C();master=ac.createGain();master.gain.value=.35;var comp=ac.createDynamicsCompressor();master.connect(comp);comp.connect(ac.destination)}if(ac.state!=='running')ac.resume();return ac}
+function unlock(){var a=audio();if(a){var s=a.createBufferSource();s.buffer=a.createBuffer(1,1,22050);s.connect(a.destination);s.start(0)}}
+['touchstart','pointerdown','touchend','click'].forEach(function(e){addEventListener(e,unlock,{passive:true,capture:true})});
+var box=document.getElementById('inst');
+box.addEventListener('touchstart',function(e){e.preventDefault()},{passive:false});box.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+addEventListener('contextmenu',function(e){e.preventDefault()});
+function flash(el){el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
+function hitAt(x,y,sel){var e=document.elementFromPoint(x,y);return e&&e.closest?e.closest(sel):null}
+
+var C=['#ff4d4d','#ff9a3c','#ffd23d','#4cd964','#3fc6f0','#5b7bff','#b35cff','#ff6fb5'],N='CDEFGABC',M=[72,74,76,77,79,81,83,84];
+var fl=document.getElementById('fl'),notes=document.getElementById('notes');
+C.forEach(function(c,k){var d=document.createElement('div');d.className='h';d.style.background=c;d.dataset.m=M[k];d.textContent=N[k];fl.appendChild(d)});
+function blow(m){var a=audio();if(!a)return null;var f=440*Math.pow(2,(m-69)/12),t=a.currentTime,g=a.createGain(),o=a.createOscillator(),o2=a.createOscillator(),g2=a.createGain(),v=a.createOscillator(),vg=a.createGain(),lp=a.createBiquadFilter();
+ o.type='sine';o.frequency.value=f;o2.type='triangle';o2.frequency.value=f*2;g2.gain.value=.12;v.frequency.value=5;vg.gain.value=f*.006;v.connect(vg);vg.connect(o.frequency);vg.connect(o2.frequency);
+ lp.type='lowpass';lp.frequency.value=f*4;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.09);g.gain.setTargetAtTime(.28,t+.09,.3);
+ o.connect(g);o2.connect(g2);g2.connect(g);g.connect(lp);lp.connect(master);
+ // breathy noise at onset
+ var nb=a.createBuffer(1,a.sampleRate*.25,a.sampleRate),d=nb.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);var ns=a.createBufferSource(),nf=a.createBiquadFilter(),ng=a.createGain();ns.buffer=nb;nf.type='bandpass';nf.frequency.value=f*2;ng.gain.value=.05;ns.connect(nf);nf.connect(ng);ng.connect(master);ns.start(t);
+ [o,o2,v].forEach(function(x){x.start(t)});return {g:g,os:[o,o2,v]}}
+function stop(s){if(!s||!ac)return;var t=ac.currentTime;s.g.gain.cancelScheduledValues(t);s.g.gain.setValueAtTime(Math.max(s.g.gain.value,.0001),t);s.g.gain.exponentialRampToValueAtTime(.0001,t+.25);s.os.forEach(function(o){o.stop(t+.3)})}
+var act={};
+function press(id,el){var c=act[id];if(c&&c.el===el)return;release(id);if(!el)return;el.classList.add('on');act[id]={el:el,s:blow(+el.dataset.m)};
+ var n=document.createElement('span');n.textContent=['♪','♫','🎵'][Math.floor(Math.random()*3)];n.style.left=(el.getBoundingClientRect().left+10)+'px';n.style.color=el.style.background;notes.appendChild(n);setTimeout(function(){n.remove()},1500)}
+function release(id){var c=act[id];if(!c)return;delete act[id];stop(c.s);if(!Object.keys(act).some(function(k){return act[k].el===c.el}))c.el.classList.remove('on')}
+function all(){Object.keys(act).forEach(release)}
+box.addEventListener('pointerdown',function(e){e.preventDefault();try{box.setPointerCapture(e.pointerId)}catch(_){}press(e.pointerId,hitAt(e.clientX,e.clientY,'.h'))});
+box.addEventListener('pointermove',function(e){if(act[e.pointerId])press(e.pointerId,hitAt(e.clientX,e.clientY,'.h'))});
+['pointerup','pointercancel','lostpointercapture'].forEach(function(n){box.addEventListener(n,function(e){release(e.pointerId)})});
+addEventListener('blur',all);addEventListener('pagehide',all);document.addEventListener('visibilitychange',function(){if(document.hidden)all();else if(ac)ac.resume()});
+window._t={press:press,release:release,act:act};
+</script></body></html>
