@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<script src="nozoom.js"></script><script>window.HOME_POS='left'</script><script src="home.js"></script><meta charset="utf-8"><title>Guitar</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:"Arial Rounded MT Bold","Nunito","Comic Sans MS",ui-rounded,system-ui,sans-serif;background:linear-gradient(135deg,#fff9c4,#ffe0f0 50%,#d7f0ff);display:flex;flex-direction:column;height:100vh;height:100dvh;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));-webkit-user-select:none;user-select:none}
+h1{margin:4px 0 6px;font-size:clamp(20px,min(5vh,7vw),44px);color:#e0408a;text-align:center;text-shadow:0 2px 0 #fff}
+#g{position:relative;flex:1;min-height:0;touch-action:none}
+#body{position:absolute;left:2%;top:4%;width:52%;height:92%;border-radius:46% 40% 40% 46%/50%;background:radial-gradient(circle at 40% 40%,#ffb36b,#ff7a3d 60%,#d9542a);box-shadow:0 10px 0 #0002,inset 0 0 0 1.4vmin #ffd9a8}
+#hole{position:absolute;left:30%;top:50%;width:min(24vmin,40%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#5a2b12,#2b1206);box-shadow:0 0 0 1.2vmin #ffe08a,0 0 0 2.4vmin #ff6fb5}
+#neck{position:absolute;left:48%;right:7%;top:30%;height:40%;background:linear-gradient(#a2643a,#7a4524);border-radius:1vmin;box-shadow:0 8px 0 #0002}
+#neck i{position:absolute;top:0;bottom:0;width:.8vmin;background:#e8d9b0}
+#head{position:absolute;right:1%;top:24%;width:7%;height:52%;background:#8a6cff;border-radius:2vmin 3vmin 3vmin 2vmin;box-shadow:0 8px 0 #0002}
+.s{position:absolute;left:12%;right:4%;height:11%;display:flex;align-items:center;z-index:2}
+.s div{width:100%;border-radius:9px;box-shadow:0 2px 0 #0004;transition:filter .2s}
+.s.on div{animation:wob .35s;filter:brightness(1.3) drop-shadow(0 0 10px #fff)}
+@keyframes wob{0%,100%{transform:translateY(0)}20%{transform:translateY(-6px)}40%{transform:translateY(5px)}60%{transform:translateY(-3px)}80%{transform:translateY(2px)}}
+#ch{display:flex;gap:2vmin;justify-content:center;margin-top:6px}
+#ch button{font:inherit;font-weight:900;color:#fff;border:0;border-radius:3vmin;font-size:clamp(20px,5vmin,40px);padding:1.2vmin 5vmin;box-shadow:0 6px 0 #0003;text-shadow:0 2px 0 #0004;touch-action:manipulation}
+#ch button.sel{outline:5px solid #fff;transform:translateY(3px);box-shadow:0 3px 0 #0003}
+@media (orientation:portrait){#g{max-height:62vh;margin:auto 0;width:100%}}
+</style></head><body>
+<h1>🎸 Guitar 🎶</h1>
+<div id="g"><div id="body"><div id="hole"></div></div><div id="neck"></div><div id="head"></div></div>
+<div id="ch"></div>
+<script>
+var COL=['#ff4d4d','#ff9a3c','#ffd23d','#4cd964','#3fa9ff','#b35cff'];
+// strings top->bottom = high e .. low E (as seen when held). MIDI per chord
+var CH={'🎵':[64,59,55,50,45,40],'C':[64,60,55,52,48,40],'G':[67,59,55,50,47,43],'D':[66,62,57,50,45,38]};
+var CC={'🎵':'#ff6fb5','C':'#4cd964','G':'#3fa9ff','D':'#ff9a3c'};
+var cur='🎵',g=document.getElementById('g'),neck=document.getElementById('neck'),S=[];
+for(var f=1;f<6;f++){var i=document.createElement('i');i.style.left=(f*16)+'%';neck.appendChild(i)}
+COL.forEach(function(c,k){var d=document.createElement('div');d.className='s';d.style.top=(30+k*40/6-5.5+40/12)+'%';var l=document.createElement('div');l.style.height=(5+k*1.6)+'px';l.style.background='linear-gradient('+c+','+c+'aa)';d.appendChild(l);g.appendChild(d);S.push(d)});
+var chb=document.getElementById('ch');Object.keys(CH).forEach(function(n){var b=document.createElement('button');b.textContent=n;b.style.background=CC[n];if(n===cur)b.className='sel';
+ b.addEventListener('pointerdown',function(e){e.preventDefault();cur=n;[].forEach.call(chb.children,function(x){x.className=x===b?'sel':''});strum()});chb.appendChild(b)});
+var ac,master;
+function audio(){if(!ac){var C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ac=new C();master=ac.createGain();master.gain.value=.4;var comp=ac.createDynamicsCompressor();master.connect(comp);comp.connect(ac.destination)}if(ac.state!=='running')ac.resume();return ac}
+function unlock(){var a=audio();if(a){var s=a.createBufferSource();s.buffer=a.createBuffer(1,1,22050);s.connect(a.destination);s.start(0)}}
+['touchstart','pointerdown','touchend','click'].forEach(function(e){addEventListener(e,unlock,{passive:true,capture:true})});
+// Karplus-Strong pluck
+function ks(sr,f,dur){var n=Math.floor(sr*dur),out=new Float32Array(n),P=Math.max(2,Math.round(sr/f)),buf=new Float32Array(P);
+ for(var i=0;i<P;i++)buf[i]=(Math.random()*2-1)*.8;var idx=0,prev=0;
+ for(i=0;i<n;i++){var v=buf[idx],nx=buf[(idx+1)%P];var y=.996*.5*(v+nx);buf[idx]=y;out[i]=v;idx=(idx+1)%P}
+ // soften attack
+ for(i=0;i<Math.min(n,64);i++)out[i]*=i/64;return out}
+var cache={};
+function pluck(k){var a=audio();if(!a)return;var m=CH[cur][k],key=m+'|'+a.sampleRate;if(!cache[key]){var d=ks(a.sampleRate,440*Math.pow(2,(m-69)/12),2.5),b=a.createBuffer(1,d.length,a.sampleRate);b.getChannelData(0).set(d);cache[key]=b}
+ var s=a.createBufferSource(),gn=a.createGain(),lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3200;s.buffer=cache[key];gn.gain.value=.55;s.connect(lp);lp.connect(gn);gn.connect(master);s.start();
+ var el=S[k];el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
+function strum(){for(var k=5;k>=0;k--)(function(k){setTimeout(function(){pluck(k)},(5-k)*35)})(k)}
+function strAt(y){var best=-1,bd=1e9;S.forEach(function(s,k){var r=s.getBoundingClientRect(),c=r.top+r.height/2,d=Math.abs(y-c);if(d<bd){bd=d;best=k}});var r0=S[0].getBoundingClientRect();return bd<=r0.height*.75?best:-1}
+var P={};
+g.addEventListener('pointerdown',function(e){e.preventDefault();try{g.setPointerCapture(e.pointerId)}catch(_){}var k=strAt(e.clientY);P[e.pointerId]={y:e.clientY,k:k};if(k>=0)pluck(k);else strum()});
+g.addEventListener('pointermove',function(e){var p=P[e.pointerId];if(!p)return;var y0=Math.min(p.y,e.clientY),y1=Math.max(p.y,e.clientY);
+ S.forEach(function(s,k){if(k===p.k)return;var r=s.getBoundingClientRect(),c=r.top+r.height/2;if(c>y0&&c<=y1){pluck(k);p.k=k}});p.y=e.clientY});
+['pointerup','pointercancel','lostpointercapture'].forEach(function(n){g.addEventListener(n,function(e){delete P[e.pointerId]})});
+g.addEventListener('touchstart',function(e){e.preventDefault()},{passive:false});g.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+addEventListener('contextmenu',function(e){e.preventDefault()});
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&ac)ac.resume()});
+window._test={ks:ks,strAt:strAt,CH:CH};
+</script></body></html>
